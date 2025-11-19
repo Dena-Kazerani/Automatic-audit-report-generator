@@ -63,14 +63,15 @@ if st.button("Generate Audit Report"):
     if "ready" not in st.session_state:
         st.error("Please upload and process documents first.")
     else:
-        st.info("Retrieving relevant information...")
+        
         query = f"Generate the ICAAP internal audit report for year {year}. Identify weaknesses, improvements, governance issues, data issues. Base ONLY on the context."
+        with st.spinner("Retrieving relevant information..."):
+            hits = retrieve(query, top_k=20, category=None)
+            context = [h["text"] for h in hits]
 
-        hits = retrieve(query, top_k=20, category=None)
-        context = [h["text"] for h in hits]
+        with st.spinner("Calling LLM to generate full report..."):
+            answer = generate_answer(context, query)
 
-        st.info("Calling LLM to generate full report...")
-        answer = generate_answer(context, query)
-
+        st.success("Audit report generated successfully.")
         st.subheader(f"Audit Report {year}")
         st.write(answer)
