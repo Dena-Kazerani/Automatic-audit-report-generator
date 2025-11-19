@@ -66,7 +66,11 @@ def ingest_chunks(chunks):
         )
 
     # 3. Envoyer à Qdrant
-    client = QdrantClient(url=QDRANT_URL)
+    try:
+        client = QdrantClient(url=QDRANT_URL)
+    except:
+        client = QdrantClient(":memory:")
+
     create_collection_if_needed(client)
     client.upsert(
         collection_name=COLLECTION_NAME,
